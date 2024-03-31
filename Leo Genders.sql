@@ -312,7 +312,6 @@ FROM categories LEFT JOIN products ON categories.category_id=products.category_i
 WHERE product_id IS NULL;
 
 
-
 -- Challenge #23
 -- Use the UNION operator to generate a result set consisting of three columns from the Orders table:
 -- ship_status A calculated column that contains a value of SHIPPED or NOT SHIPPED
@@ -352,7 +351,6 @@ GROUP BY category_name
 ORDER BY category_name DESC;
 
 
-
 -- Challenge #26
 -- Write a SELECT statement that returns one row for each customer that has orders with these columns:
 -- The email_address column from the Customers table
@@ -383,7 +381,6 @@ HAVING COUNT(o.order_id) > 1
 ORDER BY SUM((item_price - discount_amount) * quantity) DESC;
 
 
-
 -- Challenge #28
 -- Write a SELECT statement that answers this question:
 -- What is the total amount ordered for each product? Return these columns:
@@ -395,6 +392,7 @@ FROM products p
 	JOIN order_items oi ON (p.product_id=oi.product_id)
 GROUP BY product_name WITH ROLLUP;
 -- *** I added a 'GRAND TOTAL' name to the row with the rollup for visual ease***
+
 
 -- Challenge #29
 -- Write a SELECT statement that answers this question:
