@@ -1,3 +1,8 @@
+-- This codespace aims to demonstrate my ability to use SQL to perform queries relevant to data science and business intelligence applications. 
+-- Author: Leo Genders
+-- Date: 31 March 2024
+
+
 -- Challenge #1
 -- Please use all lowercase for table names. 
 -- In the Code window on the upper left, write a query that will:
@@ -115,7 +120,7 @@ SELECT 100 AS price, .07 AS tax_rate, 100 * .07 AS tax_amount, 100 + (100 * .07)
 -- 21 Rosewood Rd. 
 -- Woodcliff Lake,NJ 07677
 -- YOU MIGHT NEED TO UNSELECT Wrap Cell Content in the Result Window
-SELECT CONCAT(line1, '\n', line2, '\n', city, ', ', state, ' ', zip_code) as address
+SELECT CONCAT(line1, '\n', line2, '\n', city, ', ', state, ' ', zip_code) AS address
 FROM addresses;
 -- ****I inserted an additional carriage return to accomodate line 2 addresses such as 'Suite 2' for 3829 Broadway Ave****
 -- ****I added a space after the comma following city to properly space the 'city, state' format****
@@ -245,3 +250,163 @@ FROM orders o
 		ON o.order_id=oi.order_id
 ORDER BY customer_id, order_date;
 
+
+-- Challenge #17
+-- Write a SELECT statement that joins the Categories table to the Products table and returns these columns: category_name, product_name, list_price.
+-- Sort the result set by the category_name column and then by the product_name column in ascending sequence.
+SELECT category_name, product_name, list_price
+FROM categories c
+   JOIN products p ON (c.category_id=p.category_id)
+ORDER BY category_name ASC, product_name ASC;
+
+-- Challenge #18
+-- Write a SELECT statement that joins the Customers table to the Addresses table and returns these columns: first_name, last_name, line1, city, state, zip_code.
+-- Return one row for each address for the customer with an email address of allan.sherwood@yahoo.com.
+SELECT first_name, last_name, line1, city, state, zip_code
+FROM customers cst
+	JOIN addresses a ON (cst.customer_id=a.customer_id)
+WHERE email_address = 'allan.sherwood@yahoo.com';
+
+
+-- Challenge #19
+-- Write a SELECT statement that joins the Customers table to the Addresses table and returns these columns: first_name, last_name, line1, city, state, zip_code.
+-- Return one row for each customer, but only return addresses that are the shipping address for a customer.
+SELECT first_name, last_name, line1, city, state, zip_code
+FROM customers cst
+	JOIN addresses a ON (cst.customer_id=a.customer_id)
+WHERE shipping_address_id = address_id;
+
+ 
+-- Challenge #20
+-- Write a SELECT statement that joins the Customers, Orders, Order_Items, and Products tables. 
+-- This statement should return these columns: last_name, first_name, order_date, product_name, item_price, discount_amount, and quantity.
+-- Use aliases for the tables.
+-- Sort the final result set by the last_name, order_date, and product_name columns.
+SELECT last_name, first_name, order_date, product_name, item_price, discount_amount, quantity
+FROM customers cst
+	JOIN orders o ON (cst.customer_id=o.customer_id)
+    JOIN order_items oi ON (o.order_id=oi.order_id)
+    JOIN products p ON (oi.product_id=p.product_id)
+ORDER BY last_name, order_date, product_name;
+
+
+-- Challenge #21
+-- Write a SELECT statement that returns the product_name and list_price columns from the Products table.
+-- Return one row for each product that has the same list price as another product.
+-- Sort the result set by the product_name column.
+SELECT p1.product_name, p1.list_price
+FROM products p1 JOIN products p2 
+	ON (p1.list_price = p2.list_price) AND
+    p1.product_id <> p2.product_id
+ORDER BY p1.product_name;
+
+
+-- Challenge #22
+-- Write a SELECT statement that returns these two columns:
+-- category_name The category_name column from the Categories table
+-- product_id The product_id column from the Products table
+-- Return one row for each category that has never been used.
+-- Hint: Use an outer join and only return rows where the product_id column contains a null value.
+SELECT category_name, product_id
+FROM categories LEFT JOIN products ON categories.category_id=products.category_id
+WHERE product_id IS NULL;
+
+
+
+-- Challenge #23
+-- Use the UNION operator to generate a result set consisting of three columns from the Orders table:
+-- ship_status A calculated column that contains a value of SHIPPED or NOT SHIPPED
+-- order_id The order_id column
+-- order_date The order_date column
+-- If the order has a value in the ship_date column, the ship_status column should contain a value of SHIPPED. Otherwise, it should contain a value of NOT SHIPPED.
+-- Sort the final result set by the order_date column.
+SELECT order_id, order_date,
+	CASE
+		WHEN (ship_date >= order_date)
+			THEN 'SHIPPED'
+		ELSE 'NOT SHIPPED'
+	END AS ship_status
+FROM orders
+ORDER BY order_date;
+-- Reference: Pg. 284-285 in text book (Murach, 2019, p. 284-285)
+
+
+-- Challenge #24
+-- Write a SELECT statement that returns these columns:
+-- The count of the number of orders in the Orders table
+-- The sum of the tax_amount columns in the Orders table
+SELECT COUNT(order_id) AS order_count, sum(tax_amount)
+FROM orders;
+
+
+-- Challenge #25
+-- Write a SELECT statement that returns one row for each category that has products with these columns:
+-- The category_name column from the Categories table
+-- The count of the products in the Products table as product_count
+-- The list price of the most expensive product in the Products table as most_expensive_product
+-- Sort the result set so the category with the most products appears first.
+SELECT category_name, count(product_id) AS product_count, MAX(list_price) AS most_expensive_product
+FROM categories c
+	JOIN products p ON (p.category_id=c.category_id)
+GROUP BY category_name
+ORDER BY category_name DESC;
+
+
+
+-- Challenge #26
+-- Write a SELECT statement that returns one row for each customer that has orders with these columns:
+-- The email_address column from the Customers table
+-- The sum of the item price in the Order_Items table multiplied by the quantity in the Order_Items table as item_price_total
+-- The sum of the discount amount column in the Order_Items table multiplied by the quantity in the Order_Items table as discount_amount_total
+-- Sort the result set in descending sequence by the item price total for each customer.
+SELECT email_address, SUM(item_price * quantity) AS item_price_total, SUM(discount_amount * quantity) AS discount_amount_total
+FROM customers c
+	JOIN orders o ON (c.customer_id=o.customer_id)
+    JOIN order_items oi ON (o.order_id=oi.order_id)
+GROUP BY email_address
+ORDER BY SUM(item_price * quantity) DESC;
+
+
+-- Challenge #27
+-- Write a SELECT statement that returns one row for each customer that has orders with these columns:
+-- The email_address column from the Customers table
+-- A count of the number of orders from orders table as order_count
+-- The order total for each order from orders table calculated from order_items
+-- Return only those rows where the customer has more than 1 order.
+-- Sort the result set in descending sequence by order_total.
+SELECT email_address, COUNT(o.order_id) AS order_count, SUM((item_price - discount_amount) * quantity) AS order_total
+FROM customers c
+	JOIN orders o ON (c.customer_id=o.customer_id)
+    JOIN order_items oi ON (o.order_id=oi.order_id)
+GROUP BY email_address
+HAVING COUNT(o.order_id) > 1
+ORDER BY SUM((item_price - discount_amount) * quantity) DESC;
+
+
+
+-- Challenge #28
+-- Write a SELECT statement that answers this question:
+-- What is the total amount ordered for each product? Return these columns:
+-- The product_name column from the Products table
+-- The total amount for each product in the Order_Items table
+-- Use the WITH ROLLUP operator to include a row that gives the grand total.
+SELECT IF(GROUPING(product_name)= 1, 'GRAND TOTAL', product_name), SUM((item_price - discount_amount) * quantity) AS total_amount
+FROM products p 
+	JOIN order_items oi ON (p.product_id=oi.product_id)
+GROUP BY product_name WITH ROLLUP;
+-- *** I added a 'GRAND TOTAL' name to the row with the rollup for visual ease***
+
+-- Challenge #29
+-- Write a SELECT statement that answers this question:
+-- Which customers have ordered more than one product? Return these columns:
+-- The email_address column from the Customers table
+-- The count of distinct products from the customer’s orders as number_of_products
+-- Sort the result set in ascending sequence by the email_address column.
+SELECT email_address, COUNT(*) AS number_of_products
+FROM customers c
+	JOIN orders o ON (c.customer_id=o.customer_id)
+    JOIN order_items oi ON (o.order_id=oi.order_id)
+    JOIN products p ON (oi.product_id=p.product_id)
+GROUP BY email_address
+HAVING COUNT(*) > 1
+ORDER BY email_address ASC;
