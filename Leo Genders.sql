@@ -1,4 +1,4 @@
--- M3-Q1
+-- Challenge #1
 -- Please use all lowercase for table names. 
 -- In the Code window on the upper left, write a query that will:
 -- Write a SELECT statement that returns four columns from the Products table: 
@@ -9,8 +9,7 @@ FROM my_guitar_shop.products
 ORDER BY list_price;
 
 
-
--- M3-Q2
+-- Challenge #2
 -- Write a SELECT statement that returns one column from the Customers table named `full_name` that joins the `last_name` and `first_name` columns.
 -- Format this column with the `last name`, a comma, a space, and the `first` name like this:
 -- Doe, John
@@ -24,9 +23,7 @@ WHERE last_name BETWEEN 'M' AND 'Z'
 ORDER BY last_name;
 
 
-
-
--- M3-Q3
+-- Challenge #3
 -- Write a SELECT statement that returns these columns from the Products table:
 -- `product_name`  The product_name column
 -- `list_price`    The list_price column
@@ -38,9 +35,7 @@ FROM products
 WHERE list_price BETWEEN 501 AND 1999;
 
 
-
-
--- M4-Q4
+-- Challenge #4
 -- Write a SELECT statement that returns these column names and data from the Products table:
 -- `product_name`  	    The product_name column
 -- `list_price`    	    The list_price column
@@ -58,9 +53,7 @@ ORDER BY discount_price DESC
 LIMIT 5;
 
 
-
-
--- M3-Q5
+-- Challenge #5
 -- Write a SELECT statement that returns these column names and data from the Order_Items table:
 -- `item_id`	- The item_id column
 -- `item_price`	- The item_price column
@@ -80,7 +73,7 @@ WHERE (item_price - discount_amount) * quantity > 500
 ORDER BY item_total DESC;
 
 
--- M3-Q6
+-- Challenge #6 
 -- Write a SELECT statement that returns these columns from the Orders table:
 -- `order_id` -	The order_id column
 -- `order_date` -	The order_date column
@@ -91,8 +84,7 @@ FROM orders
 WHERE ship_date IS NULL;
 
 
-
--- M3-Q7
+-- Challenge #7
 -- select that `last name`, `first name` and 
 -- `initials` (first name initial, last name initial) from the customer table
 -- Return only customers with a yahoo.com email address
@@ -102,10 +94,7 @@ FROM customers
 WHERE email_address REGEXP 'yahoo.com$';
 
 
-
-
-
--- M3-Q8
+-- Challenge #8
 -- Write a SELECT statement without a FROM clause that creates a row with these columns:
 -- `price`	- 100 (dollars)
 -- `tax_rate` -	.07 (7 percent)
@@ -114,11 +103,8 @@ WHERE email_address REGEXP 'yahoo.com$';
 -- To calculate the fourth column, add the expressions you used for the first and third columns.       
 SELECT 100 AS price, .07 AS tax_rate, 100 * .07 AS tax_amount, 100 + (100 * .07) AS total;
 
-
-
-
        
--- M3-Q9
+-- Challenge #9
 -- Write a query that selects 'line1' 'line2','city','state,' 'zip_code' from the addresses table as `address`
 -- Insert  carriage return before displaying 'city','state', 'zip' 
 -- *hint: use '\n'*
@@ -131,17 +117,131 @@ SELECT 100 AS price, .07 AS tax_rate, 100 * .07 AS tax_amount, 100 + (100 * .07)
 -- YOU MIGHT NEED TO UNSELECT Wrap Cell Content in the Result Window
 SELECT CONCAT(line1, '\n', line2, '\n', city, ', ', state, ' ', zip_code) as address
 FROM addresses;
-
 -- ****I inserted an additional carriage return to accomodate line 2 addresses such as 'Suite 2' for 3829 Broadway Ave****
 -- ****I added a space after the comma following city to properly space the 'city, state' format****
 -- ****I needed to unselect 'wrap cell content' to properly view****
 
 
--- M3-Q10
+-- Challenge #10 
 -- Retrieve all orders between given March 1,2018 and March 31, 2018
 -- Select the following columns:order_id, order_date and ship_date
 SELECT order_id, order_date, ship_date
 FROM orders
 WHERE order_date BETWEEN '2018-03-01' AND '2018-03-31';
 
+
+-- Challenge #11 - Retrieve data from one or more tables- use zagi
+-- Marketing needs a list of customers and what product they have purchased
+-- which also shows category name and vendor name for that product.  To do this:
+-- Create a query that returns customername, productname, categoryname, vendorname
+-- order the list by customer name
+-- Your list should contain 9 items
+SELECT customername, productname, categoryname, vendorname
+FROM zagi.customer cu, zagi.product p, zagi.category ct, zagi.vendor v, zagi.includes i, zagi.salestransaction s
+WHERE cu.customerid=s.customerid
+	AND s.tid=i.tid
+	AND i.productid=p.productid
+	AND p.categoryid=ct.categoryid
+  AND p.vendorid=v.vendorid
+ORDER BY customername;
+
+
+-- Challenge #12 - Retrieve data from one or more tables - outer join- use hafh
+-- Write three separate queries that return the bulding id, apartment number and corporate client name:
+-- Which apartments have no corporate clients currently leasing them?
+SELECT buildingid, aptno AS apartment_number, ccname AS corp_client_name
+FROM hafh.apartment a
+	LEFT JOIN corpclient c
+    ON a.ccid=c.ccid;
+-- ANSWER: Apartment Number 41 in Building B1 and Apartment Number 31 in B2 currently have no corporate clients leasing them.
+
+
+-- Which corporate clients are currently not leasing any appartments?
+SELECT buildingid, aptno AS apartment_number, ccname AS corp_client_name
+FROM hafh.corpclient c
+	LEFT JOIN apartment a
+    ON c.ccid=a.ccid;
+-- ANSWER: SouthAlps is a corporate client not currently leasing any apartments.
+
+
+-- A list that combines the two above queries - a full outer join
+	SELECT buildingid, aptno AS apartment_number, ccname AS corp_client_name
+	FROM hafh.apartment a
+		LEFT JOIN corpclient c
+		ON a.ccid=c.ccid
+UNION
+	SELECT buildingid, aptno AS apartment_number, ccname AS corp_client_name
+	FROM hafh.corpclient c
+		LEFT JOIN apartment a
+		ON c.ccid=a.ccid;
+
+
+-- Challenge #13 - Summary queries - use my_guitar_shop
+-- Write a SELECT statement that answers this question: What is the total quantity 
+-- purchased for each product within each category? Return these columns:
+-- The category_name column from the category table
+-- The product_name column from the products table
+-- The total quantity purchased for each product with orders in the Order_Items table
+-- Use the WITH ROLLUP operator to include rows that give a summary for each 
+-- category name as well as a row that gives the grand total.
+-- Use the IF and GROUPING functions to replace null values in the category_name 
+-- and product_name columns with literal values if they’re for summary rows. 
+SELECT IF(GROUPING(category_name) = 1, 'GRAND TOTAL', category_name) AS category_name,
+	IF(GROUPING(product_name) = 1, 'CATEGORY ORDERED TOTAL', product_name) AS product_name, 
+    SUM(quantity) as total_quantity
+FROM categories c 
+	JOIN products p
+		ON c.category_id=p.category_id
+    JOIN order_items o
+		ON p.product_id=o.product_id
+GROUP BY category_name, product_name WITH ROLLUP;
+    
+
+-- Challenge #14 - Summary queries - use my_guitar_shop
+-- Write a SELECT statement that uses an aggregate window function to get the total 
+-- amount of each order. Return these columns:
+-- The order_id column from the Order_Items table
+-- The total amount for each order item in the Order_Items table (Hint: You can 
+-- calculate the total amount by subtracting the discount amount from the item 
+-- price and then multiplying it by the quantity)
+-- The total amount for each order
+-- Sort the result set in ascending sequence by the order_id column.
+SELECT order_id, SUM((item_price - discount_amount) * quantity) OVER(PARTITION BY item_id) AS item_total_amount, 
+	SUM((item_price - discount_amount) * quantity) OVER(PARTITION BY order_id) AS total_order_amount
+FROM order_items
+ORDER BY order_id;
+
+
+-- Challenge #15 - Summary queries - use my_guitar_shop
+-- Modify the solution to exercise Challenge 4 so the column that contains the total amount for 
+-- each order contains a cumulative total by item amount.
+-- Add another column to the SELECT statement that uses an aggregate window 
+-- function to get the average item amount for each order.
+-- Modify the SELECT statement so it uses a named window for the two aggregate 
+-- functions.
+SELECT order_id, (item_price - discount_amount) * quantity AS item_amount, 
+SUM((item_price - discount_amount) * quantity) OVER (order_window ORDER BY item_id) AS cumulative_total_amount,
+AVG((item_price - discount_amount) * quantity) OVER (order_window) AS item_average_by_order
+FROM order_items
+WINDOW order_window AS (PARTITION BY order_id)
+ORDER BY order_id;
+
+
+-- Challenge #16 - Summary queries - use my_guitar_shop
+-- Write a SELECT statement that uses aggregate window functions to calculate the 
+-- order total for each customer and the order total for each customer by date. Return 
+-- these columns:
+-- The customer_id column from the Orders table
+-- The order_date column from the Orders table
+-- The total amount for each order item in the Order_Items table
+-- The sum of the order totals for each customer
+-- The sum of the order totals for each customer by date (Hint: You can create a 
+-- peer group to get these values)
+SELECT customer_id, order_date, (item_price - discount_amount) * quantity AS item_amount, 
+SUM((item_price - discount_amount) * quantity) OVER (PARTITION BY customer_id) AS customer_order_total, 
+SUM((item_price - discount_amount) * quantity) OVER (PARTITION BY customer_id, order_date) AS date_total
+FROM orders o
+	JOIN order_items oi 
+		ON o.order_id=oi.order_id
+ORDER BY customer_id, order_date;
 
