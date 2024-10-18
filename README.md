@@ -9,27 +9,7 @@ There are 40 queries that cover a number of topics in SQL, covering data enginee
 - Regular expression functions
 - Ranking functions
 
-### This project is a test
-
-## Read Me Test Header ##
-
-# Project Details 1 
-
-# Project Details 1 
-
-# Project Details 1 
-
-# Project Details 1 
-
-
-## Read Me Test Header ##
-
-# Project Details 1 
-
-# Project Details 1 
-
-# Project Details 1 
-
-# Project Details 1 
-
+## Test
+**BOLD TEST** \
+*ITALICIZE TEST*
 adding a change
