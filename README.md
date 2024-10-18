@@ -8,8 +8,3 @@ There are 40 queries that cover a number of topics in SQL, covering data enginee
 - IF / IF NULL/ COALESCE and CASE statements
 - Regular expression functions
 - Ranking functions
-
-## Test
-**BOLD TEST** \
-*ITALICIZE TEST*
-adding a change
